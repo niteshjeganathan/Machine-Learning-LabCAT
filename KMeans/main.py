@@ -31,6 +31,18 @@ plt.show()
 plt.plot(range(2, 11), silhoutte_scores)
 plt.show()
 
+# Selecting k = 2
+model = KMeans(n_clusters=2, init='k-means++', random_state=0)
+y = model.fit_predict(X)
+
+# Plotting Graphs 
+plt.scatter(X[y == 0, 0], X[y==0, 1], s = 100, c='blue', label='Cluster 1')
+plt.scatter(X[y == 1, 0], X[y==1, 1], s = 100, c='red', label='Cluster 2')
+plt.legend()
+plt.show()
+
+
+
 
 
 
