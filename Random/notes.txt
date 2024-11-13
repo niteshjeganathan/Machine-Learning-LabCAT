@@ -1,0 +1,7 @@
+1. Plain Models
+2. Plotting Graphs
+3. Accuracy Metrics for Regression and Classification
+4. Hinge Loss
+5. Clustering - elbow method, wcss method
+6. Multimax thingy
+7. Preprocessing
