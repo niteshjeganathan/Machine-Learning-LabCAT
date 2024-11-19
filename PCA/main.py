@@ -1,69 +1,55 @@
-# Importing Libraries
-import numpy as np
-import pandas as pd
+# Importing Libraries 
+import numpy as np 
+import pandas as pd 
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error
 from sklearn.decomposition import PCA
-from sklearn.ensemble import AdaBoostRegressor
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
 
-# Importing dataset
-dataset =  pd.read_csv('gait.csv')
-
-# Check for Missing Values
-# print(dataset.isnull().sum())
-
-# Splitting Target and Features
+# Importing Dataset 
+dataset = pd.read_csv('iris.data')
 X = dataset.iloc[:, :-1].values
 y = dataset.iloc[:, -1].values
 
-# Splitting Data (70-30)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, train_size=0.7, random_state=0)
+# Label Encoding Target Values
+le = LabelEncoder()
+y = le.fit_transform(y)
 
-# PCA
-pca = PCA(n_components=2)
-X_train_pca = pca.fit_transform(X_train)
-X_test_pca = pca.transform(X_test)
+# Splitting Training and Testing Data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=0)
 
-print(X_train_pca)
-# Model Training
-regressor = LinearRegression()
-regressor.fit(X_train, y_train)
+# Feature Scaling
+ss = StandardScaler()
+X_train_scaled = ss.fit_transform(X_train)
+X_test_scaled = ss.transform(X_test)
 
-# Predicting Test Set Results
-y_pred = regressor.predict(X_test)
+# Comparing Performance with and without PCA
+methods = {
+    "PCA": PCA(n_components=3), 
+    "No PCA": None
+}
 
-# Predicting a new variable
+accuracy_scores = {}
 
-# print(regressor.predict([[1,1,1,1,1,100]]))
+for method_name, method in methods.items():
+    if(method):
+        X_train_transformed = method.fit_transform(X_train_scaled)
+        X_test_transformed = method.transform(X_test_scaled)
+    else:
+        X_train_transformed = X_train_scaled
+        X_test_transformed = X_test_scaled
+    
+    classifier = KNeighborsClassifier(n_neighbors=5)
+    classifier.fit(X_train_transformed, y_train)
 
-# Printing Error
-# print(mean_squared_error(y_test, y_pred))
-# print(mean_absolute_percentage_error(y_test, y_pred))
+    y_pred = classifier.predict(X_test_transformed)
 
-# Printing Coefficients
-# print(regressor.coef_)
-# print(regressor.intercept_)
+    score = accuracy_score(y_test, y_pred)
 
-# Updating Dataset
-dataset['gait speed'] = 1 * dataset['subject'] + 2 * dataset['condition'] + 3 * dataset['replication'] + 4 * dataset['leg'] + 5 * dataset['joint'] + 6 * dataset['time'] + 7 * dataset['angle']
+    accuracy_scores[method_name] = score
 
-# Splitting Features and Target
-X_new = dataset.iloc[:, :-1].values
-y_new = dataset.iloc[:, -1].values
-
-# Splitting Training and Test Data
-x_tr, x_te, y_tr, y_te = train_test_split(X_new, y_new)
-
-# Training Model
-reg = LinearRegression()
-reg.fit(x_tr, y_tr)
-
-# Predict Gait Speed
-y_pr = reg.predict(x_te)
-
-# Printing Error
-# print(mean_absolute_percentage_error(y_te, y_pr))
-# print(reg.coef_)       
-# print(reg.intercept_)                                                                                                                                          
+# Plotting Comparision
+plt.bar(accuracy_scores.keys(), accuracy_scores.values())
+plt.show()
