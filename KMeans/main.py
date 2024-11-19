@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
-# Importing Dataset 
+# Importing Dataset
 dataset = pd.read_csv('dataset.csv')
-X = dataset.iloc[:, 1:].values
+X = dataset.iloc[:, 1:-1].values
 
-# Choosing k
+# Choosing K
 wcss = []
 silhoutte_scores = []
 
@@ -23,26 +23,20 @@ for i in range(1, 11):
         silhoutte = silhouette_score(X, cluster_labels)
         silhoutte_scores.append(silhoutte)
 
-# Plotting Graphs
-
+# Plotting Graph
 plt.plot(range(1, 11), wcss)
 plt.show()
 
 plt.plot(range(2, 11), silhoutte_scores)
 plt.show()
 
-# Selecting k = 2
+# K = 2
 model = KMeans(n_clusters=2, init='k-means++', random_state=0)
 y = model.fit_predict(X)
 
-# Plotting Graphs 
-plt.scatter(X[y == 0, 0], X[y==0, 1], s = 100, c='blue', label='Cluster 1')
-plt.scatter(X[y == 1, 0], X[y==1, 1], s = 100, c='red', label='Cluster 2')
+# Plotting Clusters
+plt.scatter(X[y==0, 0], X[y==0, 1], s=100, c='blue', label='Cluster 1')
+plt.scatter(X[y==1, 0], X[y==1, 1], s=100, c='red', label='Cluster 2')
 plt.legend()
 plt.show()
-
-
-
-
-
 
